@@ -219,18 +219,31 @@ print(PostHocTest(aov(data_v$didbuy~positive2)))
 useonly2 = factor(useonly)
 levels(useonly)
 levels(useonly2)
-levels(useonly2)[c(1,2)] = "Disagree"
+levels(useonly2)[c(1,2,3)] = "Disagree"
 levels(useonly2)[c(2,3)] = "Agree"
 levels(useonly2)
 print(PostHocTest(aov(data_v$didbuy~useonly2)))
 
-
 influenc2 = factor(influenc)
 levels(influenc)
 levels(influenc2)
-levels(influenc2)[c(2,3,4)] = "Neutral"
+levels(influenc2)[c(1,2)] = "Disagree"
 levels(influenc2)
 print(PostHocTest(aov(data_v$didbuy~influenc2)))
+
+model1 = lm(data_v$didbuy ~ goodtool2 + helpful2 + positive2 + useonly2 + influenc2 + 
+               goodtool2:helpful2 + goodtool2:positive2 + goodtool2:useonly2 + goodtool2:influenc2 +
+               helpful2:positive2 + helpful2:useonly2 + helpful2:influenc2 + 
+               positive2:useonly2 + positive2:influenc2 + useonly2:influenc2)
+
+summary(model1)
+
+model12 = lm(data_v$didbuy ~ influenc2 + helpful2:useonly2)
+
+summary(model12)
+
+model13.dim = ols_step_both_p(model12)
+
 #---------------------------------------------------------------------------
 #question 2
 
@@ -269,8 +282,6 @@ for(i in 37:43){
   print(summary(aov(actual~data[,i])))
   print("-----------------------------------------------------------------")
 }
-
-#to be changed
 
 print(cor.test(actual, age, method = 'pearson'))
 
