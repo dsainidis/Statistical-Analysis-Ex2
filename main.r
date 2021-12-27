@@ -18,6 +18,7 @@ education_vector <- c('Less than high school', 'High school', 'Some college', 'U
 race_vector <- c('Caucasian', 'Black', 'Asian', 'American Indian', 'Hispanic', 'Other')
 income_vector <- c('Under $35,000', '$50,000 - $65,000', '$65,000 - $80,000', '$80,000 - $95,000', '$95,000 - $110,000', 'Over $110,000')
 gender_vector <- c('Male', 'Female')
+children_vector <- c('0', '1', '2', '3', '4', '5')
 
 labels$visit <- factor(labels$visit, levels = yes.no_vector)
 labels$howoft <- factor(labels$howoft, levels = often_vector, ordered = TRUE)
@@ -58,6 +59,7 @@ labels$educate <- factor(labels$educate, levels = education_vector)
 labels$race <- factor(labels$race, levels = race_vector)
 labels$income <- factor(labels$income, levels = income_vector, ordered = TRUE)
 labels$gender <- factor(labels$gender, levels = gender_vector)
+labels$children <- factor(labels$children, levels = children_vector, ordered = TRUE)
 
 data <- labels
 data_v <- values
@@ -175,20 +177,60 @@ for(i in 20:25){
   print("-----------------------------------------------------------------")
 }
 
-for(i in 1:10){
+print(PostHocTest(aov(data_v$didbuy~goodtool)))
+goodtool2 = factor(goodtool)
+levels(goodtool)
+levels(goodtool2)
+levels(goodtool2)[c(1,2,3)] = "Disagree"
+levels(goodtool2)[c(2,3)] = "Agree"
+levels(goodtool2)
+print(PostHocTest(aov(data_v$didbuy~goodtool2)))
+
+#for(i in 1:10){
+#  print("-----------------------------------------------------------------")
+#  print(paste(names[i], i, sep=" "))
+#  print(PostHocTest(aov(data_v$didbuy~data[,i])))
+#  print("-----------------------------------------------------------------")
+#}
+
+for(i in 21:24){
   print("-----------------------------------------------------------------")
   print(paste(names[i], i, sep=" "))
   print(PostHocTest(aov(data_v$didbuy~data[,i])))
   print("-----------------------------------------------------------------")
 }
 
-for(i in 20:25){
-  print("-----------------------------------------------------------------")
-  print(paste(names[i], i, sep=" "))
-  print(PostHocTest(aov(data_v$didbuy~data[,i])))
-  print("-----------------------------------------------------------------")
-}
+helpful2 = factor(helpful)
+levels(helpful)
+levels(helpful2)
+levels(helpful2)[c(1,2)] = "Disagree"
+levels(helpful2)[c(2,3,4)] = "Agree"
+levels(helpful2)
+print(PostHocTest(aov(data_v$didbuy~helpful2)))
 
+positive2 = factor(positive)
+levels(positive)
+levels(positive2)
+levels(positive2)[c(1,2)] = "Disagree"
+levels(positive2)[c(2,3)] = "Agree"
+levels(positive2)
+print(PostHocTest(aov(data_v$didbuy~positive2)))
+
+useonly2 = factor(useonly)
+levels(useonly)
+levels(useonly2)
+levels(useonly2)[c(1,2)] = "Disagree"
+levels(useonly2)[c(2,3)] = "Agree"
+levels(useonly2)
+print(PostHocTest(aov(data_v$didbuy~useonly2)))
+
+
+influenc2 = factor(influenc)
+levels(influenc)
+levels(influenc2)
+levels(influenc2)[c(2,3,4)] = "Neutral"
+levels(influenc2)
+print(PostHocTest(aov(data_v$didbuy~influenc2)))
 #---------------------------------------------------------------------------
 #question 2
 
@@ -229,7 +271,10 @@ for(i in 37:43){
 }
 
 #to be changed
-for(i in 37:43){
+
+print(cor.test(actual, age, method = 'pearson'))
+
+for(i in 38:43){
   print("-----------------------------------------------------------------")
   print(paste(names[i], i, sep=" "))
   print(PostHocTest(aov(actual~data[,i])))
@@ -261,5 +306,6 @@ for(i in 11:19){
 
 #---------------------------------------------------------------------------
 
-
-
+model = lm(actual ~ income)
+summary(model)
+plot(model)
