@@ -173,15 +173,15 @@ library(DescTools)
 #---------------------------------------------------------------------------
 #question 1
 
-names = colnames(data)
+#names = colnames(data)
 
-for(i in 1:10){
-  plot(data[,i], didbuy, xlab= names[i])
-}
+#for(i in 1:10){
+#  plot(data[,i], didbuy, xlab= names[i])
+#}
 
-for(i in 20:25){
-  plot(data[,i], didbuy, xlab= names[i])
-}
+#for(i in 20:25){
+#  plot(data[,i], didbuy, xlab= names[i])
+#}
 
 for(i in 1:10){
   print("-----------------------------------------------------------------")
@@ -206,6 +206,9 @@ levels(goodtool2)[c(2,3)] = "Agree"
 levels(goodtool2)
 print(PostHocTest(aov(data_v$didbuy~goodtool2)))
 
+plot(goodtool, didbuy, xlab = "goodtool")
+plot(goodtool2, didbuy, xlab = "goodtool2")
+
 #for(i in 1:10){
 #  print("-----------------------------------------------------------------")
 #  print(paste(names[i], i, sep=" "))
@@ -228,6 +231,9 @@ levels(helpful2)[c(2,3,4)] = "Agree"
 levels(helpful2)
 print(PostHocTest(aov(data_v$didbuy~helpful2)))
 
+plot(helpful, didbuy, xlab = "helpful")
+plot(helpful2, didbuy, xlab= "helpful")
+
 positive2 = factor(positive)
 levels(positive)
 levels(positive2)
@@ -235,6 +241,9 @@ levels(positive2)[c(1,2)] = "Disagree"
 levels(positive2)[c(2,3)] = "Agree"
 levels(positive2)
 print(PostHocTest(aov(data_v$didbuy~positive2)))
+
+plot(positive, didbuy, xlab = "positive")
+plot(positive2, didbuy, xlab= "positive2")
 
 useonly2 = factor(useonly)
 levels(useonly)
@@ -244,12 +253,18 @@ levels(useonly2)[c(2,3)] = "Agree"
 levels(useonly2)
 print(PostHocTest(aov(data_v$didbuy~useonly2)))
 
+plot(useonly, didbuy, xlab = "useonly")
+plot(useonly2, didbuy, xlab = "useonly2")
+
 influenc2 = factor(influenc)
 levels(influenc)
 levels(influenc2)
 levels(influenc2)[c(1,2)] = "Disagree"
 levels(influenc2)
 print(PostHocTest(aov(data_v$didbuy~influenc2)))
+
+plot(influenc, didbuy, xlab = "influenc")
+plot(influenc2, didbuy, xlab = "influenc2")
 
 model1 = lm(data_v$didbuy ~ goodtool2 + helpful2 + positive2 + useonly2 + influenc2 + 
                goodtool2:helpful2 + goodtool2:positive2 + goodtool2:useonly2 + goodtool2:influenc2 +
@@ -267,11 +282,11 @@ summary(model12)
 #---------------------------------------------------------------------------
 #question 2
 
-names = colnames(data)
+#names = colnames(data)
 
-for(i in 27:32){
-  plot(data[,i], didbuy, xlab= names[i])
-}
+#for(i in 27:32){
+#  plot(data[,i], didbuy, xlab= names[i])
+#}
 
 for(i in 27:32){
   print("-----------------------------------------------------------------")
@@ -295,12 +310,18 @@ levels(safe2)[c(2,3,4,5)] = "Not Disagree"
 levels(safe2)
 print(PostHocTest(aov(data_v$didbuy~safe2)))
 
+plot(safe, didbuy, xlab= "safe")
+plot(safe2, didbuy, xlab= "safe2")
+
 print(PostHocTest(aov(data_v$didbuy~price)))
 price2 = factor(price)
 levels(price2)[c(2,3)] = "Neutral"
 levels(price)
 levels(price2)
 print(PostHocTest(aov(data_v$didbuy~price2)))
+
+plot(price, didbuy, xlab= "price")
+plot(price2, didbuy, xlab= "price2")
 
 model2 = lm(data_v$didbuy ~ safe2*price)
 summary(model2)
