@@ -289,7 +289,6 @@ summary(model12)
 #}
 
 for(i in 27:32){
-  print("-----------------------------------------------------------------")
   print(paste(names[i], i, sep=" "))
   print(summary(aov(data_v$didbuy~data[,i])))
   print("-----------------------------------------------------------------")
@@ -323,7 +322,7 @@ print(PostHocTest(aov(data_v$didbuy~price2)))
 plot(price, didbuy, xlab= "price")
 plot(price2, didbuy, xlab= "price2")
 
-model2 = lm(data_v$didbuy ~ safe2*price)
+model2 = lm(data_v$didbuy ~ safe2*price2)
 summary(model2)
 #model22.dim = ols_step_both_p(model2)
 #---------------------------------------------------------------------------
