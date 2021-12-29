@@ -64,7 +64,8 @@ labels$children <- factor(labels$children, levels = children_vector, ordered = T
 data <- labels
 data_v <- values
 
-summary(data)
+summary_df = as.data.frame.matrix(summary(data), row.names = F)
+write.csv(summary_df, "summary.csv", row.names = F, na = "")
 
 drop = c('qnrnumb', 'visit', 'better', 'howmuch')
 #----------------------------------------------------------------------------
@@ -72,7 +73,6 @@ drop = c('qnrnumb', 'visit', 'better', 'howmuch')
 data = data[,!(names(data) %in% drop)]
 data_v = data_v[,!(names(data_v) %in% drop)]
 
-summary(data)
 attach(data)
 #----------------------------------------------------------------------------
 drop1 = c('age', 'sticker', 'actual', 'worth', 'noweeks', 'visits')
@@ -89,52 +89,73 @@ for(i in 1:ncol(data_categ)) {
 par(las = 1)
 for(i in 1:ncol(data_categ)) {
   count = prop.table(table(data_categ[ , i]))
-  barplot(count, main = names[i])
+  barplot(count, main = names[i],cex.names=0.75)
 }
 #----------------------------------------------------------------------------
 
-for(i in 1:ncol(data_categ)) {
-  count = prop.table(table(data_categ[ , i]))
-  pie(count, main = names[i])
+detach("package:psych", unload = TRUE)
+library(plotrix)
+
+create_3dpie <- function(col, title) {
+  values <- as.numeric(table(col))
+  labels <- names(table(col))
+  percetages <- round(values/sum(values)*100)
+  labels <- paste(labels, percetages)
+  labels <- paste(labels, "%", sep = "")
+  pie3D(values, labels = labels, theta = 1.25, explode = 0.1, main = title)
+}
+
+print (ncol(data_categ))
+
+for(i in 2:31) {
+  create_3dpie(data_categ[ , i], names[i])
+}
+
+for(i in 33:37) {
+  create_3dpie(data_categ[ , i], names[i])
 }
 
 #----------------------------------------------------------------------------
-hist(data$age, main = "Histogram of age")
-hist(data$sticker, main = "Histogram of sticker")
-hist(data$worth, main = "Histogram of worth")
-hist(data$actual, main = "Histogram of actual")
-hist(data$noweeks, main = "Histogram of noweeks")
-hist(data$visits, main = "Histogram of visits")
+create_hist <- function(col, xLabel, title) {
+  x <- col
+  range = max(col, na.rm=TRUE) - min(col, na.rm=TRUE)
+  if (range > 75) {
+    range = 75
+  }
+  h <- hist(x, breaks = range/2, col="red", xlab = xLabel, main = paste("Histogram of", xLabel, sep = " "))
+  xfit <- seq(min(x), max(x), length = 40)
+  yfit <- dnorm(xfit, mean = mean(x), sd = sd(x))
+  yfit <- yfit * diff(h$mids[1:2]) * length(x)
+  lines(xfit, yfit, col = "blue", lwd = 2)
+}
 
-boxplot(data$age, xlab = "age")
-boxplot(data$sticker, xlab = "sticker")
-boxplot(data$worth, xlab = "worth")
-boxplot(data$actual, xlab = "actual")
-boxplot(data$noweeks, xlab = "noweeks")
-boxplot(data$visits, xlab = "visits")
+create_hist(age, "Age")
+create_hist(actual, "Actual")
+create_hist(visits, "Visits")
 
-create_qqplot <- function(col, var) {
+boxplot(age, xlab = "age")
+boxplot(actual, xlab = "actual")
+boxplot(visits, xlab = "visits")
+
+ create_qqplot <- function(col, var) {
   print(summary(col))
   qqnorm(col, col = 'Red', main = paste('Q-Q Plot: ', var, sep = " "))
   qqline(col, col = 'Blue', lwd = 2)
 }
 
 create_qqplot(data$age, 'age')
-create_qqplot(data$sticker, 'sticker')
-create_qqplot(data$worth, 'worth')
 create_qqplot(data$actual, 'actual')
-create_qqplot(data$noweeks, 'noweeks')
 create_qqplot(data$visits, 'visits')
 
 create_qqplot(log(data$age), 'log(age)')
-create_qqplot(log(data$sticker), 'log(sticker)')
-create_qqplot(log(data$worth), 'log(worth)')
 create_qqplot(log(data$actual), 'log(actual)')
-create_qqplot(log(data$noweeks), 'log(noweeks)')
 create_qqplot(log(data$visits), 'log(visits)')
 
+library(psych)
 #----------------------------------------------------------------------------
-describe(data[, c('age','sticker', 'worth', 'actual', 'noweeks', 'visits')])
+describe(data[, c('age', 'actual', 'visits')])
+describe_df = as.data.frame.matrix(describe(data[, c('age', 'actual', 'visits')]), row.names = F)
+write.csv(describe_df, "describtion.csv", row.names = F, na = "")
 #----------------------------------------------------------------------------
 
 #ci for "actual"
@@ -143,8 +164,7 @@ a = numeric(100000)
 for(j in 1:100000) {
   a[j] = mean(sample(data$actual, len, replace = T))
 }
-a
-hist(a)
+hist(a, main = 'Confidence intervals for actual')
 abline(v = quantile(a,0.025), col='red')
 abline(v = quantile(a,0.975), col='blue')
 
@@ -242,7 +262,7 @@ model12 = lm(data_v$didbuy ~ influenc2 + helpful2:useonly2)
 
 summary(model12)
 
-model13.dim = ols_step_both_p(model12)
+#model13.dim = ols_step_both_p(model12)
 
 #---------------------------------------------------------------------------
 #question 2
@@ -260,13 +280,31 @@ for(i in 27:32){
   print("-----------------------------------------------------------------")
 }
 
-for(i in 27:32){
-  print("-----------------------------------------------------------------")
-  print(paste(names[i], i, sep=" "))
-  print(PostHocTest(aov(data_v$didbuy~data[,i])))
-  print("-----------------------------------------------------------------")
-}
+#for(i in 27:32){
+#  print("-----------------------------------------------------------------")
+#  print(paste(names[i], i, sep=" "))
+#  print(PostHocTest(aov(data_v$didbuy~data[,i])))
+#  print("-----------------------------------------------------------------")
+#}
 
+print(PostHocTest(aov(data_v$didbuy~safe)))
+safe2 = factor(safe)
+levels(safe)
+levels(safe2)
+levels(safe2)[c(2,3,4,5)] = "Not Disagree"
+levels(safe2)
+print(PostHocTest(aov(data_v$didbuy~safe2)))
+
+print(PostHocTest(aov(data_v$didbuy~price)))
+price2 = factor(price)
+levels(price2)[c(2,3)] = "Neutral"
+levels(price)
+levels(price2)
+print(PostHocTest(aov(data_v$didbuy~price2)))
+
+model2 = lm(data_v$didbuy ~ safe2*price)
+summary(model2)
+#model22.dim = ols_step_both_p(model2)
 #---------------------------------------------------------------------------
 #question 3
 
